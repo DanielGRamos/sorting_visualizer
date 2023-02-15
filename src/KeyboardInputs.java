@@ -24,6 +24,7 @@ public class KeyboardInputs implements KeyListener {
             case KeyEvent.VK_RIGHT -> sortsAlgos.getSortingAlgos().getSorts().setUpSize(true);
             case KeyEvent.VK_UP -> sortsAlgos.getSortingAlgos().getSorts().setFaster(true);
             case KeyEvent.VK_DOWN -> sortsAlgos.getSortingAlgos().getSorts().setSlower(true);
+            case KeyEvent.VK_O -> sortsAlgos.getSortingAlgos().getSorts().setOld(true);
         }
     }
 
@@ -34,6 +35,7 @@ public class KeyboardInputs implements KeyListener {
             case KeyEvent.VK_RIGHT -> sortsAlgos.getSortingAlgos().getSorts().setUpSize(false);
             case KeyEvent.VK_UP -> sortsAlgos.getSortingAlgos().getSorts().setFaster(false);
             case KeyEvent.VK_DOWN -> sortsAlgos.getSortingAlgos().getSorts().setSlower(false);
+            case KeyEvent.VK_O -> sortsAlgos.getSortingAlgos().getSorts().setOld(false);
         }
     }
 }

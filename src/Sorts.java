@@ -7,8 +7,10 @@ import java.util.concurrent.ThreadLocalRandom;
 // DATE: 14/02/2023
 
 public class Sorts {
-    private final int[] numbers;
+    private int[] numbers;
+    private int[] oldNumbers;
     private final int height;
+    private final int width;
     private int size;
     private int length;
     private int i;
@@ -18,24 +20,23 @@ public class Sorts {
     private int highQS;
     private int pivotQS;
     private int ticks;
-    private boolean insertionSort, bubbleSort, quickSort, partitionQS, sorting, lowerSize, upSize, faster, slower;
+    private boolean insertionSort, bubbleSort, quickSort, partitionQS, sorting, lowerSize, upSize, faster, slower, old;
     private final Stack<Integer> stackForQuickSort;
     private final SortingAlgos sortingAlgos;
 
 
     public Sorts(int size, int width, int height, SortingAlgos sortingAlgos) {
         numbers = new int[400];
+        oldNumbers = new int[400];
         this.sortingAlgos = sortingAlgos;
         this.size = size;
         this.height = height;
+        this.width = width;
         length = width / size;
-        i = -1;
-        j = -1;
-        k = -1;
         lowQS = 0;
         highQS = size - 1;
         stackForQuickSort = new Stack<>();
-        randomizeArray(numbers);
+        randomizeArraySame();
     }
 
     private void createArrayOrdered(int[] array) {
@@ -45,6 +46,7 @@ public class Sorts {
 
     public void randomizeArraySame() {
         randomizeArray(numbers);
+        oldNumbers = numbers.clone();
         ticks = 0;
         k = -1;
         i = -1;
@@ -67,6 +69,10 @@ public class Sorts {
         array[j] = temp;
     }
 
+    public void setOld (boolean old){
+        this.old = old;
+    }
+
     private void setSize(int length, boolean growing) {
         if (length < 2 || length > 50)
             return;
@@ -79,7 +85,7 @@ public class Sorts {
         }
 
         this.length = length;
-        size = 800 / length;
+        size = width / length;
         randomizeArraySame();
     }
 
@@ -131,21 +137,26 @@ public class Sorts {
         }
     }
 
+    //FAZER CLASSES Á PARTE TESTE
+
     // INSERTION SORT
     private void iterateInsertionSort() {
         ticks++;
-        j--;
         if (j == size) {
             i = -1;
             j = -1;
             insertionSort = false;
             sorting = false;
-        } else if (j == 0)
+        } else if (j == 0) {
             resetInsertionSort();
-        else if (numbers[j] < numbers[j - 1])
+        }
+        else if (numbers[j] < numbers[j - 1]) {
             exchange(numbers, j, j - 1);
-        else
+        }
+        else {
             resetInsertionSort();
+        }
+        j--;
     }
 
     private void resetInsertionSort() {
@@ -178,18 +189,18 @@ public class Sorts {
     private void iterateQuickSort() {
         ticks++;
         if (partitionQS) {
-            if (j > highQS) {
+            if (j > highQS-1) {
                 exchange(numbers, i + 1, highQS);
                 pivotQS = i + 1;
                 partitionQS = false;
 
-                if (pivotQS - 1 > lowQS) {
-                    stackForQuickSort.push(lowQS);
-                    stackForQuickSort.push(pivotQS - 1);
-                }
                 if (pivotQS + 1 < highQS) {
                     stackForQuickSort.push(pivotQS + 1);
                     stackForQuickSort.push(highQS);
+                }
+                if (pivotQS - 1 > lowQS) {
+                    stackForQuickSort.push(lowQS);
+                    stackForQuickSort.push(pivotQS - 1);
                 }
                 return;
             }
@@ -218,18 +229,6 @@ public class Sorts {
 
     // RENDER AND UPDATE
     public void render(Graphics g) {
-        g.drawString("Ticks: " + ticks, 40, 40);
-        g.drawString("UPS: " + sortingAlgos.getUpsSet(), 40, 60);
-        g.drawString("FPS: 120", 40, 80);
-        g.drawString("Size: " + size, 40, 100);
-
-        g.drawString("UP/DOWN: Faster/Slower", 300, 40);
-        g.drawString("LEFT/RIGHT: Increase/Decrease array", 300, 60);
-
-        g.drawString("I: Insertion Sort", 600, 40);
-        g.drawString("B: Bubble Sort", 600, 60);
-        g.drawString("Q: Quick Sort", 600, 80);
-
         double multiplier = length == 2 ? 1.6 : length - 1;
 
         g.setColor(Color.GREEN);
@@ -242,16 +241,30 @@ public class Sorts {
             for (int i = 0; i < size; i++)
                 g.drawString(String.valueOf(numbers[i]), (i * length + length / 2) - 1, 700);
 
-        if (i == -1 || j == -1)
-            return;
-        g.setColor(Color.RED);
-        g.fillRect(i * length, height, length, (int) (multiplier * -numbers[i] - 30));
-        g.fillRect(j * length, height, length, (int) (multiplier * -numbers[j] - 30));
+        if (i != -1 && j != -1) {
+            g.setColor(Color.RED);
+            g.fillRect(i * length, height, length, (int) (multiplier * -numbers[i] - 30));
+            g.fillRect(j * length, height, length, (int) (multiplier * -numbers[j] - 30));
+        }
 
-        if (k == -1)
-            return;
-        g.setColor(Color.BLACK);
-        g.fillRect(k * length, height, length, (int) (multiplier * -numbers[k] - 30));
+        if (k != -1) {
+            g.setColor(Color.BLACK);
+            g.fillRect(k * length, height, length, (int) (multiplier * -numbers[k] - 30));
+        }
+
+        g.drawString("Ticks: " + ticks, 40, 40);
+        g.drawString("UPS: " + sortingAlgos.getUpsSet(), 40, 60);
+        g.drawString("FPS: 120", 40, 80);
+        g.drawString("Size: " + size, 40, 100);
+
+        g.drawString("UP/DOWN: Faster/Slower", 300, 40);
+        g.drawString("LEFT/RIGHT: Increase/Decrease array", 300, 60);
+        g.drawString("R: Randomize", 300, 80);
+        g.drawString("O: Repeat array", 300, 100);
+
+        g.drawString("I: Insertion Sort", 600, 40);
+        g.drawString("B: Bubble Sort", 600, 60);
+        g.drawString("Q: Quick Sort", 600, 80);
     }
 
     public void update() {
@@ -273,6 +286,11 @@ public class Sorts {
                 setSize(length + 1, true);
             else if (upSize)
                 setSize(length - 1, false);
+
+            if (old) {
+                numbers = oldNumbers.clone();
+                ticks = 0;
+            }
         }
     }
 }
