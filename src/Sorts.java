@@ -1,42 +1,56 @@
 import java.awt.*;
-import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom;
 
 // THIS IS WHERE EVERYTHING HAPPENS
 // AUTHOR: DANIEL RAMOS
-// DATE: 14/02/2023
 
 public class Sorts {
-    private int[] numbers;
-    private int[] oldNumbers;
     private final int height;
     private final int width;
+    private final SortingAlgos sortingAlgos;
+    private final InsertionSort insertionSort;
+    private final BubbleSort bubbleSort;
+    private final QuickSort quickSort;
+    private int[] numbers;
+    private int[] oldNumbers;
+    private int count_size;
     private int size;
     private int length;
     private int i;
     private int j;
     private int k;
-    private int lowQS;
-    private int highQS;
-    private int pivotQS;
     private int ticks;
-    private boolean insertionSort, bubbleSort, quickSort, partitionQS, sorting, lowerSize, upSize, faster, slower, old;
-    private final Stack<Integer> stackForQuickSort;
-    private final SortingAlgos sortingAlgos;
+    private int counterForMerge;
+    private int startiMerge;
+    private int startjMerge;
+    private int tempForMerge;
+    private boolean insertionSortBol, bubbleSortBol, quickSortBol, sorting, lowerSize, upSize, faster, slower, old, mergeSort, shiftingForMerge;
 
 
     public Sorts(int size, int width, int height, SortingAlgos sortingAlgos) {
         numbers = new int[400];
         oldNumbers = new int[400];
+        insertionSort = new InsertionSort(0, 0, numbers, this);
+        bubbleSort = new BubbleSort(0, 0, numbers, this);
+        quickSort = new QuickSort(0, 0, 0, numbers, this);
         this.sortingAlgos = sortingAlgos;
         this.size = size;
         this.height = height;
         this.width = width;
         length = width / size;
-        lowQS = 0;
-        highQS = size - 1;
-        stackForQuickSort = new Stack<>();
         randomizeArraySame();
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    public void setJ(int j) {
+        this.j = j;
+    }
+
+    public void setK(int k) {
+        this.k = k;
     }
 
     private void createArrayOrdered(int[] array) {
@@ -52,9 +66,10 @@ public class Sorts {
         i = -1;
         j = -1;
         sorting = false;
-        insertionSort = false;
-        bubbleSort = false;
-        quickSort = false;
+        insertionSortBol = false;
+        bubbleSortBol = false;
+        quickSortBol = false;
+        mergeSort = false;
     }
 
     private void randomizeArray(int[] array) {
@@ -69,7 +84,7 @@ public class Sorts {
         array[j] = temp;
     }
 
-    public void setOld (boolean old){
+    public void setOld(boolean old) {
         this.old = old;
     }
 
@@ -89,6 +104,19 @@ public class Sorts {
         randomizeArraySame();
     }
 
+    public void setSorting(boolean sorting) {
+        if (!sorting) {
+            i = -1;
+            j = -1;
+            k = -1;
+            this.sorting = false;
+            insertionSortBol = false;
+            bubbleSortBol = false;
+            quickSortBol = false;
+            mergeSort = false;
+        }
+    }
+
     public void setFaster(boolean faster) {
         this.faster = faster;
     }
@@ -105,125 +133,115 @@ public class Sorts {
         this.upSize = upSize;
     }
 
-    public void setInsertionSort(boolean insertionSort) {
+    public void setMergeSort(boolean mergeSort) {
         if (!sorting) {
-            this.insertionSort = insertionSort;
+            this.mergeSort = mergeSort;
             sorting = true;
-            i = 1;
-            j = 1;
-        }
-    }
-
-    public void setBubbleSort(boolean bubbleSort) {
-        if (!sorting) {
-            this.bubbleSort = bubbleSort;
-            sorting = true;
+            count_size = 1;
             i = 0;
-            j = 0;
+            j = 1;
+            startiMerge = 0;
+            startjMerge = 1;
         }
     }
 
-    public void setQuickSort(boolean quickSort) {
+    public void setInsertionSortBol(boolean insertionSortBol) {
         if (!sorting) {
-            this.quickSort = quickSort;
+            this.insertionSortBol = insertionSortBol;
             sorting = true;
-            lowQS = 0;
-            highQS = size - 1;
-            k = highQS;
-            i = lowQS;
-            j = highQS;
-            stackForQuickSort.push(lowQS);
-            stackForQuickSort.push(highQS);
+            insertionSort.setAll(size, numbers);
         }
     }
 
-    //FAZER CLASSES Á PARTE TESTE
+    public void setBubbleSortBol(boolean bubbleSortBol) {
+        if (!sorting) {
+            this.bubbleSortBol = bubbleSortBol;
+            sorting = true;
+            bubbleSort.setAll(size, numbers);
+        }
+    }
 
-    // INSERTION SORT
-    private void iterateInsertionSort() {
+    public void setQuickSortBol(boolean quickSortBol) {
+        if (!sorting) {
+            this.quickSortBol = quickSortBol;
+            quickSort.setAll(size, numbers);
+            sorting = true;
+        }
+    }
+
+    // MERGE SORT
+    private void iterateMergeSort() {
         ticks++;
-        if (j == size) {
+        if (count_size > size) {
+            mergeSort = false;
+            sorting = false;
             i = -1;
             j = -1;
-            insertionSort = false;
-            sorting = false;
-        } else if (j == 0) {
-            resetInsertionSort();
         }
-        else if (numbers[j] < numbers[j - 1]) {
-            exchange(numbers, j, j - 1);
-        }
-        else {
-            resetInsertionSort();
-        }
-        j--;
-    }
-
-    private void resetInsertionSort() {
-        i++;
-        j = i;
-    }
-
-    // BUBBLE SORT
-    private void iterateBubbleSort() {
-        ticks++;
-        if (i >= size - 1) {
-            i = -1;
-            j = -1;
-            bubbleSort = false;
-            sorting = false;
-        } else if (j >= size - i - 1)
-            resetBubbleSort();
-        else if (numbers[j] > numbers[j + 1])
-            exchange(numbers, j, j + 1);
-        else
-            j++;
-    }
-
-    private void resetBubbleSort() {
-        i++;
-        j = 0;
-    }
-
-    // QUICK SORT
-    private void iterateQuickSort() {
-        ticks++;
-        if (partitionQS) {
-            if (j > highQS-1) {
-                exchange(numbers, i + 1, highQS);
-                pivotQS = i + 1;
-                partitionQS = false;
-
-                if (pivotQS + 1 < highQS) {
-                    stackForQuickSort.push(pivotQS + 1);
-                    stackForQuickSort.push(highQS);
-                }
-                if (pivotQS - 1 > lowQS) {
-                    stackForQuickSort.push(lowQS);
-                    stackForQuickSort.push(pivotQS - 1);
-                }
-                return;
-            }
-            if (numbers[j] < pivotQS) {
-                i++;
+        //OPTIMIZED FOR FIRST
+        else if (count_size == 1) {
+            if (j >= size) {
+                count_size *= 2;
+                i = 0;
+                j = count_size;
+                startiMerge = 0;
+                startjMerge = count_size;
+            } else if (numbers[i] > numbers[j]) {
                 exchange(numbers, i, j);
+            } else {
+                i += 2;
+                j += 2;
             }
-            j++;
-        } else if (!stackForQuickSort.isEmpty()) {
-            highQS = stackForQuickSort.pop();
-            lowQS = stackForQuickSort.pop();
-            pivotQS = numbers[highQS];
-            k = highQS;
-            i = lowQS - 1;
-            j = lowQS;
-            partitionQS = true;
-        } else {
-            i = -1;
-            j = -1;
-            k = -1;
-            quickSort = false;
-            sorting = false;
         }
+        // IF J ENDS
+        else if (j >= startjMerge + count_size || j >= size) {
+            if (j < size && numbers[i] > numbers[j])
+                exchange(numbers, i, j);
+            int double_count = count_size * 2;
+            i = startiMerge + double_count;
+            j = startjMerge + double_count;
+            startiMerge = i;
+            startjMerge = j;
+            if (i > size) {
+                count_size *= 2;
+                i = 0;
+                j = count_size;
+                startiMerge = 0;
+                startjMerge = j;
+            }
+        }
+        // SHIFTING FOR WHEN num[i] > num[j] happens
+        else if (shiftingForMerge) {
+            if (counterForMerge > 0) {
+                numbers[i + counterForMerge] = numbers[i + counterForMerge - 1];
+                counterForMerge--;
+            } else {
+                shiftingForMerge = false;
+                numbers[i] = tempForMerge;
+                i++;
+                j = Math.min(j + 1, startjMerge + count_size - 1);
+            }
+        }
+        // IF LEFT SIDE ENDS
+        else if (i == j) {
+            int double_count = count_size * 2;
+            i = startiMerge + double_count;
+            j = startjMerge + double_count;
+            startiMerge = i;
+            startjMerge = j;
+        }
+        // num[i] < num[j]
+        else if (numbers[i] < numbers[j]) {
+            i++;
+        }
+        // num[i] > num[j]
+        else if (numbers[i] > numbers[j]) {
+            tempForMerge = numbers[j];
+            counterForMerge = j - i;
+            shiftingForMerge = true;
+        } else
+            j = Math.min(Math.min(j + 1, startjMerge + count_size), size);
+
     }
 
 
@@ -234,12 +252,6 @@ public class Sorts {
         g.setColor(Color.GREEN);
         for (int i = 0; i < size; i++)
             g.fillRect(i * length, height, length, (int) (multiplier * -numbers[i] - 30));
-
-
-        g.setColor(Color.BLACK);
-        if (length > 10)
-            for (int i = 0; i < size; i++)
-                g.drawString(String.valueOf(numbers[i]), (i * length + length / 2) - 1, 700);
 
         if (i != -1 && j != -1) {
             g.setColor(Color.RED);
@@ -252,8 +264,14 @@ public class Sorts {
             g.fillRect(k * length, height, length, (int) (multiplier * -numbers[k] - 30));
         }
 
+        g.setColor(Color.BLACK);
+        if (length > 10) {
+            for (int i = 0; i < size; i++)
+                g.drawString(String.valueOf(numbers[i]), (i * length + length / 2) - 1, 700);
+        }
+
         g.drawString("Ticks: " + ticks, 40, 40);
-        g.drawString("UPS: " + sortingAlgos.getUpsSet(), 40, 60);
+        g.drawString("TPS: " + sortingAlgos.getUpsSet(), 40, 60);
         g.drawString("FPS: 120", 40, 80);
         g.drawString("Size: " + size, 40, 100);
 
@@ -265,6 +283,7 @@ public class Sorts {
         g.drawString("I: Insertion Sort", 600, 40);
         g.drawString("B: Bubble Sort", 600, 60);
         g.drawString("Q: Quick Sort", 600, 80);
+        g.drawString("M: Merge Sort (in-place)", 600, 100);
     }
 
     public void update() {
@@ -274,12 +293,14 @@ public class Sorts {
             sortingAlgos.setUpsSet(sortingAlgos.getUpsSet() - 10);
 
 
-        if (insertionSort)
-            iterateInsertionSort();
-        else if (bubbleSort)
-            iterateBubbleSort();
-        else if (quickSort)
-            iterateQuickSort();
+        if (insertionSortBol)
+            insertionSort.iterate();
+        else if (bubbleSortBol)
+            bubbleSort.iterate();
+        else if (quickSortBol)
+            quickSort.iterate();
+        else if (mergeSort)
+            iterateMergeSort();
 
         if (!sorting) {
             if (lowerSize)
@@ -291,6 +312,41 @@ public class Sorts {
                 numbers = oldNumbers.clone();
                 ticks = 0;
             }
+        } else {
+            ticks++;
         }
     }
 }
+
+
+// merge Dead code
+//        else if (i == startjMerge){
+//            count_size *= 2;
+//         i = startiMerge + count_size;
+//         j = startjMerge + count_size;
+//         startiMerge = i;
+//         startjMerge = j;
+//        }else if (j >= size-1){
+//            count_size *= 2;
+//            i = 0;
+//            j = count_size;
+//        }else if(shiftingForMerge){
+//            if (counterForMerge > 0){
+//                numbers[i+counterForMerge] = numbers[i+ counterForMerge-1];
+//                counterForMerge--;
+//            }else {
+//                shiftingForMerge = false;
+//                numbers[i] = tempForMerge;
+//                i++;
+//                j++;
+//            }
+//        }
+//        else if (j == i+1 && numbers[i] > numbers[j])
+//            exchange(numbers, i,j);
+//        else if (numbers[i] < numbers[j]) {
+//            i++;
+//        } else if(numbers[i] > numbers[j]){
+//            tempForMerge = numbers[j];
+//            counterForMerge = j - i;
+//            shiftingForMerge = true;
+//        }

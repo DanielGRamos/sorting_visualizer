@@ -1,8 +1,7 @@
+// AUTHOR: DANIEL RAMOS
+
 import javax.swing.*;
 import java.awt.*;
-
-// AUTHOR: DANIEL RAMOS
-// DATE: 14/02/2023
 
 public class SortingAlgosPanel extends JPanel {
     private final SortingAlgos sortingAlgos;

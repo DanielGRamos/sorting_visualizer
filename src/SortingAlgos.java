@@ -1,7 +1,7 @@
+// AUTHOR: DANIEL RAMOS
+
 import java.awt.*;
 
-// AUTHOR: DANIEL RAMOS
-// DATE: 14/02/2023
 
 public class SortingAlgos implements Runnable {
     private final SortingAlgosPanel sortingAlgosPanel;
@@ -85,7 +85,7 @@ public class SortingAlgos implements Runnable {
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println(frames + " | " + updates);
+//                System.out.println(frames + " | " + updates);
                 frames = 0;
                 updates = 0;
             }

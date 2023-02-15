@@ -1,3 +1,5 @@
+// AUTHOR: DANIEL RAMOS
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -17,9 +19,10 @@ public class KeyboardInputs implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_R -> sortsAlgos.getSortingAlgos().getSorts().randomizeArraySame();
-            case KeyEvent.VK_I -> sortsAlgos.getSortingAlgos().getSorts().setInsertionSort(true);
-            case KeyEvent.VK_B -> sortsAlgos.getSortingAlgos().getSorts().setBubbleSort(true);
-            case KeyEvent.VK_Q -> sortsAlgos.getSortingAlgos().getSorts().setQuickSort(true);
+            case KeyEvent.VK_I -> sortsAlgos.getSortingAlgos().getSorts().setInsertionSortBol(true);
+            case KeyEvent.VK_B -> sortsAlgos.getSortingAlgos().getSorts().setBubbleSortBol(true);
+            case KeyEvent.VK_Q -> sortsAlgos.getSortingAlgos().getSorts().setQuickSortBol(true);
+            case KeyEvent.VK_M -> sortsAlgos.getSortingAlgos().getSorts().setMergeSort(true);
             case KeyEvent.VK_LEFT -> sortsAlgos.getSortingAlgos().getSorts().setLowerSize(true);
             case KeyEvent.VK_RIGHT -> sortsAlgos.getSortingAlgos().getSorts().setUpSize(true);
             case KeyEvent.VK_UP -> sortsAlgos.getSortingAlgos().getSorts().setFaster(true);

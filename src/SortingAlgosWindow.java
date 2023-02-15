@@ -1,14 +1,14 @@
+// AUTHOR: DANIEL RAMOS
+
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
-// AUTHOR: DANIEL RAMOS
-// DATE: 14/02/2023
 
 public class SortingAlgosWindow extends JFrame {
 
     SortingAlgosWindow(SortingAlgosPanel sortingAlgosPanel) {
         new JFrame();
+        setTitle("Sorting Algorithms - By Daniel Ramos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(sortingAlgosPanel);
         setResizable(false);
