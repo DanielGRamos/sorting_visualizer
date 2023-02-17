@@ -1,44 +1,44 @@
-// AUTHOR: DANIEL RAMOS
-
-public class InsertionSort {
+public class ShellSort {
     private final Sorts sorts;
-    private int i, j, size;
+    private int i, j, h, size;
     private int[] numbers;
 
-    public InsertionSort(int[] numbers, Sorts sorts) {
+    public ShellSort(int[] numbers, Sorts sorts) {
         this.sorts = sorts;
         this.numbers = numbers;
     }
 
     public void setAll(int size, int[] numbers) {
-        i = 1;
-        j = 1;
+        h = 1;
         this.size = size;
         this.numbers = numbers;
+        while (h < size / 3) h = 3 * h + 1;
+        i = h;
+        j = i;
     }
 
     public void iterate() {
-        if (j == size) {
+        if (h == 0) {
             i = -1;
             j = -1;
             sorts.setSorting(false);
             return;
-        } else if (j == 0) {
-            resetInsertionSort();
-        } else if (numbers[j] < numbers[j - 1]) {
-            exchange(numbers, j, j - 1);
+        } else if (i >= size) {
+            h /= 3;
+            i = h;
+            j = h;
+        } else if (j < h) {
+            i++;
+            j = i;
+        } else if (numbers[j] < numbers[j - h]) {
+            exchange(numbers, j, j - h);
+            j -= h;
         } else {
-            resetInsertionSort();
+            i++;
+            j = i;
         }
-        j--;
-
         sorts.setI(i);
         sorts.setJ(j);
-    }
-
-    private void resetInsertionSort() {
-        i++;
-        j = i;
     }
 
 

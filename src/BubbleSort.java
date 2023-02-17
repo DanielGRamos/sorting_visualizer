@@ -5,9 +5,7 @@ public class BubbleSort {
     private int i, j, size;
     private int[] numbers;
 
-    public BubbleSort(int i, int j, int[] numbers, Sorts sorts) {
-        this.i = i;
-        this.j = j;
+    public BubbleSort(int[] numbers, Sorts sorts) {
         this.sorts = sorts;
         this.numbers = numbers;
     }
@@ -31,7 +29,7 @@ public class BubbleSort {
         else
             j++;
 
-        sorts.setI(i);
+        sorts.setI(size-i);
         sorts.setJ(j);
     }
 

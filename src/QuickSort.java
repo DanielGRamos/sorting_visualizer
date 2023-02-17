@@ -9,10 +9,7 @@ public class QuickSort {
     private int[] numbers;
     private boolean partition;
 
-    public QuickSort(int i, int j, int k, int[] numbers, Sorts sorts) {
-        this.i = i;
-        this.j = j;
-        this.k = k;
+    public QuickSort(int[] numbers, Sorts sorts) {
         this.sorts = sorts;
         this.numbers = numbers;
         stackForQuickSort = new Stack<>();

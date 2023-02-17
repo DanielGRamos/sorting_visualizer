@@ -11,28 +11,27 @@ public class Sorts {
     private final InsertionSort insertionSort;
     private final BubbleSort bubbleSort;
     private final QuickSort quickSort;
+    private final MergeSortInPlace mergeSortInPlace;
+    private final ShellSort shellSort;
     private int[] numbers;
     private int[] oldNumbers;
-    private int count_size;
     private int size;
     private int length;
     private int i;
     private int j;
     private int k;
     private int ticks;
-    private int counterForMerge;
-    private int startiMerge;
-    private int startjMerge;
-    private int tempForMerge;
-    private boolean insertionSortBol, bubbleSortBol, quickSortBol, sorting, lowerSize, upSize, faster, slower, old, mergeSort, shiftingForMerge;
+    private boolean insertionSortBol, bubbleSortBol, quickSortBol, mergeSortInPlaceBol, shellSortBol, sorting, lowerSize, upSize, faster, slower, old;
 
 
     public Sorts(int size, int width, int height, SortingAlgos sortingAlgos) {
         numbers = new int[400];
         oldNumbers = new int[400];
-        insertionSort = new InsertionSort(0, 0, numbers, this);
-        bubbleSort = new BubbleSort(0, 0, numbers, this);
-        quickSort = new QuickSort(0, 0, 0, numbers, this);
+        insertionSort = new InsertionSort(numbers, this);
+        bubbleSort = new BubbleSort(numbers, this);
+        quickSort = new QuickSort(numbers, this);
+        mergeSortInPlace = new MergeSortInPlace(numbers, this);
+        shellSort = new ShellSort(numbers, this);
         this.sortingAlgos = sortingAlgos;
         this.size = size;
         this.height = height;
@@ -69,7 +68,8 @@ public class Sorts {
         insertionSortBol = false;
         bubbleSortBol = false;
         quickSortBol = false;
-        mergeSort = false;
+        mergeSortInPlaceBol = false;
+        shellSortBol = false;
     }
 
     private void randomizeArray(int[] array) {
@@ -92,7 +92,7 @@ public class Sorts {
         if (length < 2 || length > 50)
             return;
 
-        while (800 / (double) (length) % 1 != 0) {
+        while (width / (double) (length) % 1 != 0) {
             if (growing)
                 length++;
             else
@@ -113,7 +113,7 @@ public class Sorts {
             insertionSortBol = false;
             bubbleSortBol = false;
             quickSortBol = false;
-            mergeSort = false;
+            mergeSortInPlaceBol = false;
         }
     }
 
@@ -133,15 +133,19 @@ public class Sorts {
         this.upSize = upSize;
     }
 
-    public void setMergeSort(boolean mergeSort) {
+    public void setMergeSortInPlaceBol(boolean mergeSortInPlaceBol) {
         if (!sorting) {
-            this.mergeSort = mergeSort;
+            this.mergeSortInPlaceBol = mergeSortInPlaceBol;
             sorting = true;
-            count_size = 1;
-            i = 0;
-            j = 1;
-            startiMerge = 0;
-            startjMerge = 1;
+            mergeSortInPlace.setAll(size, numbers);
+        }
+    }
+
+    public void setShellSort(boolean shellSortBol) {
+        if (!sorting) {
+            this.shellSortBol = shellSortBol;
+            sorting = true;
+            shellSort.setAll(size, numbers);
         }
     }
 
@@ -169,82 +173,6 @@ public class Sorts {
         }
     }
 
-    // MERGE SORT
-    private void iterateMergeSort() {
-        ticks++;
-        if (count_size > size) {
-            mergeSort = false;
-            sorting = false;
-            i = -1;
-            j = -1;
-        }
-        //OPTIMIZED FOR FIRST
-        else if (count_size == 1) {
-            if (j >= size) {
-                count_size *= 2;
-                i = 0;
-                j = count_size;
-                startiMerge = 0;
-                startjMerge = count_size;
-            } else if (numbers[i] > numbers[j]) {
-                exchange(numbers, i, j);
-            } else {
-                i += 2;
-                j += 2;
-            }
-        }
-        // IF J ENDS
-        else if (j >= startjMerge + count_size || j >= size) {
-            if (j < size && numbers[i] > numbers[j])
-                exchange(numbers, i, j);
-            int double_count = count_size * 2;
-            i = startiMerge + double_count;
-            j = startjMerge + double_count;
-            startiMerge = i;
-            startjMerge = j;
-            if (i > size) {
-                count_size *= 2;
-                i = 0;
-                j = count_size;
-                startiMerge = 0;
-                startjMerge = j;
-            }
-        }
-        // SHIFTING FOR WHEN num[i] > num[j] happens
-        else if (shiftingForMerge) {
-            if (counterForMerge > 0) {
-                numbers[i + counterForMerge] = numbers[i + counterForMerge - 1];
-                counterForMerge--;
-            } else {
-                shiftingForMerge = false;
-                numbers[i] = tempForMerge;
-                i++;
-                j = Math.min(j + 1, startjMerge + count_size - 1);
-            }
-        }
-        // IF LEFT SIDE ENDS
-        else if (i == j) {
-            int double_count = count_size * 2;
-            i = startiMerge + double_count;
-            j = startjMerge + double_count;
-            startiMerge = i;
-            startjMerge = j;
-        }
-        // num[i] < num[j]
-        else if (numbers[i] < numbers[j]) {
-            i++;
-        }
-        // num[i] > num[j]
-        else if (numbers[i] > numbers[j]) {
-            tempForMerge = numbers[j];
-            counterForMerge = j - i;
-            shiftingForMerge = true;
-        } else
-            j = Math.min(Math.min(j + 1, startjMerge + count_size), size);
-
-    }
-
-
     // RENDER AND UPDATE
     public void render(Graphics g) {
         double multiplier = length == 2 ? 1.6 : length - 1;
@@ -259,16 +187,15 @@ public class Sorts {
             g.fillRect(j * length, height, length, (int) (multiplier * -numbers[j] - 30));
         }
 
-        if (k != -1) {
-            g.setColor(Color.BLACK);
-            g.fillRect(k * length, height, length, (int) (multiplier * -numbers[k] - 30));
-        }
-
         g.setColor(Color.BLACK);
-        if (length > 10) {
+        if (k != -1)
+            g.fillRect(k * length, height, length, (int) (multiplier * -numbers[k] - 30));
+
+
+        if (length > 10)
             for (int i = 0; i < size; i++)
                 g.drawString(String.valueOf(numbers[i]), (i * length + length / 2) - 1, 700);
-        }
+
 
         g.drawString("Ticks: " + ticks, 40, 40);
         g.drawString("TPS: " + sortingAlgos.getUpsSet(), 40, 60);
@@ -299,8 +226,10 @@ public class Sorts {
             bubbleSort.iterate();
         else if (quickSortBol)
             quickSort.iterate();
-        else if (mergeSort)
-            iterateMergeSort();
+        else if (mergeSortInPlaceBol)
+            mergeSortInPlace.iterate();
+        else if (shellSortBol)
+            shellSort.iterate();
 
         if (!sorting) {
             if (lowerSize)
@@ -317,36 +246,3 @@ public class Sorts {
         }
     }
 }
-
-
-// merge Dead code
-//        else if (i == startjMerge){
-//            count_size *= 2;
-//         i = startiMerge + count_size;
-//         j = startjMerge + count_size;
-//         startiMerge = i;
-//         startjMerge = j;
-//        }else if (j >= size-1){
-//            count_size *= 2;
-//            i = 0;
-//            j = count_size;
-//        }else if(shiftingForMerge){
-//            if (counterForMerge > 0){
-//                numbers[i+counterForMerge] = numbers[i+ counterForMerge-1];
-//                counterForMerge--;
-//            }else {
-//                shiftingForMerge = false;
-//                numbers[i] = tempForMerge;
-//                i++;
-//                j++;
-//            }
-//        }
-//        else if (j == i+1 && numbers[i] > numbers[j])
-//            exchange(numbers, i,j);
-//        else if (numbers[i] < numbers[j]) {
-//            i++;
-//        } else if(numbers[i] > numbers[j]){
-//            tempForMerge = numbers[j];
-//            counterForMerge = j - i;
-//            shiftingForMerge = true;
-//        }

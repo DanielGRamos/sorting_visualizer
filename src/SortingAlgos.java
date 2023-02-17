@@ -23,7 +23,7 @@ public class SortingAlgos implements Runnable {
     }
 
     public void setUpsSet(int upsSet) {
-        if (upsSet < 10 || upsSet > 1000)
+        if (upsSet < 10 || upsSet > 2000)
             return;
 
         this.upsSet = upsSet;

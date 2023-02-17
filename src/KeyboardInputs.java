@@ -22,7 +22,8 @@ public class KeyboardInputs implements KeyListener {
             case KeyEvent.VK_I -> sortsAlgos.getSortingAlgos().getSorts().setInsertionSortBol(true);
             case KeyEvent.VK_B -> sortsAlgos.getSortingAlgos().getSorts().setBubbleSortBol(true);
             case KeyEvent.VK_Q -> sortsAlgos.getSortingAlgos().getSorts().setQuickSortBol(true);
-            case KeyEvent.VK_M -> sortsAlgos.getSortingAlgos().getSorts().setMergeSort(true);
+            case KeyEvent.VK_M -> sortsAlgos.getSortingAlgos().getSorts().setMergeSortInPlaceBol(true);
+            case KeyEvent.VK_S -> sortsAlgos.getSortingAlgos().getSorts().setShellSort(true);
             case KeyEvent.VK_LEFT -> sortsAlgos.getSortingAlgos().getSorts().setLowerSize(true);
             case KeyEvent.VK_RIGHT -> sortsAlgos.getSortingAlgos().getSorts().setUpSize(true);
             case KeyEvent.VK_UP -> sortsAlgos.getSortingAlgos().getSorts().setFaster(true);
