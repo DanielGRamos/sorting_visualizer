@@ -29,7 +29,7 @@ public class BubbleSort {
         else
             j++;
 
-        sorts.setI(size-i);
+        sorts.setI(size - i);
         sorts.setJ(j);
     }
 

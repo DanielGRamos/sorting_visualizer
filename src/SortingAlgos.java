@@ -2,7 +2,6 @@
 
 import java.awt.*;
 
-
 public class SortingAlgos implements Runnable {
     private final SortingAlgosPanel sortingAlgosPanel;
     private final Sorts sorts;
@@ -12,7 +11,7 @@ public class SortingAlgos implements Runnable {
 
     public SortingAlgos() {
         sortingAlgosPanel = new SortingAlgosPanel(this, screenWidth, screenHeight);
-        sorts = new Sorts(200, screenWidth, screenHeight, this);
+        sorts = new Sorts(16, screenWidth, screenHeight, this);
         new SortingAlgosWindow(sortingAlgosPanel);
         sortingAlgosPanel.requestFocus();
         startLoop();
@@ -23,10 +22,15 @@ public class SortingAlgos implements Runnable {
     }
 
     public void setUpsSet(int upsSet) {
-        if (upsSet < 10 || upsSet > 2000)
+        if (upsSet < 2 || upsSet > 2000)
             return;
 
         this.upsSet = upsSet;
+    }
+
+    public void resetUPS() {
+        if (upsSet == 0) upsSet = 1;
+        else upsSet = 0;
     }
 
     private void startLoop() {

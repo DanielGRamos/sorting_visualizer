@@ -1,3 +1,5 @@
+// AUTHOR: DANIEL RAMOS
+
 public class ShellSort {
     private final Sorts sorts;
     private int i, j, h, size;

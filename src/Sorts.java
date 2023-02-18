@@ -13,6 +13,7 @@ public class Sorts {
     private final QuickSort quickSort;
     private final MergeSortInPlace mergeSortInPlace;
     private final ShellSort shellSort;
+    private final MergeSort mergeSort;
     private int[] numbers;
     private int[] oldNumbers;
     private int size;
@@ -21,17 +22,18 @@ public class Sorts {
     private int j;
     private int k;
     private int ticks;
-    private boolean insertionSortBol, bubbleSortBol, quickSortBol, mergeSortInPlaceBol, shellSortBol, sorting, lowerSize, upSize, faster, slower, old;
+    private boolean insertionSortBol, bubbleSortBol, quickSortBol, mergeSortInPlaceBol, mergeSortBol, shellSortBol, sorting, lowerSize, upSize, faster, slower, old;
 
 
     public Sorts(int size, int width, int height, SortingAlgos sortingAlgos) {
-        numbers = new int[400];
-        oldNumbers = new int[400];
+        numbers = new int[401];
+        oldNumbers = new int[401];
         insertionSort = new InsertionSort(numbers, this);
         bubbleSort = new BubbleSort(numbers, this);
         quickSort = new QuickSort(numbers, this);
         mergeSortInPlace = new MergeSortInPlace(numbers, this);
         shellSort = new ShellSort(numbers, this);
+        mergeSort = new MergeSort(numbers, this);
         this.sortingAlgos = sortingAlgos;
         this.size = size;
         this.height = height;
@@ -45,6 +47,7 @@ public class Sorts {
     }
 
     public void setJ(int j) {
+        if (j > size) j = size;
         this.j = j;
     }
 
@@ -70,6 +73,7 @@ public class Sorts {
         quickSortBol = false;
         mergeSortInPlaceBol = false;
         shellSortBol = false;
+        mergeSortBol = false;
     }
 
     private void randomizeArray(int[] array) {
@@ -114,6 +118,7 @@ public class Sorts {
             bubbleSortBol = false;
             quickSortBol = false;
             mergeSortInPlaceBol = false;
+            mergeSortBol = false;
         }
     }
 
@@ -138,6 +143,14 @@ public class Sorts {
             this.mergeSortInPlaceBol = mergeSortInPlaceBol;
             sorting = true;
             mergeSortInPlace.setAll(size, numbers);
+        }
+    }
+
+    public void setMergeSortBol(boolean mergeSortBol) {
+        if (!sorting) {
+            this.mergeSortBol = mergeSortBol;
+            sorting = true;
+            mergeSort.setAll(size, numbers);
         }
     }
 
@@ -182,8 +195,9 @@ public class Sorts {
             g.fillRect(i * length, height, length, (int) (multiplier * -numbers[i] - 30));
 
         if (i != -1 && j != -1) {
-            g.setColor(Color.RED);
+            g.setColor(Color.BLUE);
             g.fillRect(i * length, height, length, (int) (multiplier * -numbers[i] - 30));
+            g.setColor(Color.RED);
             g.fillRect(j * length, height, length, (int) (multiplier * -numbers[j] - 30));
         }
 
@@ -206,11 +220,14 @@ public class Sorts {
         g.drawString("LEFT/RIGHT: Increase/Decrease array", 300, 60);
         g.drawString("R: Randomize", 300, 80);
         g.drawString("O: Repeat array", 300, 100);
+        g.drawString("T: Pause/Resume", 300, 120);
 
         g.drawString("I: Insertion Sort", 600, 40);
         g.drawString("B: Bubble Sort", 600, 60);
         g.drawString("Q: Quick Sort", 600, 80);
-        g.drawString("M: Merge Sort (in-place)", 600, 100);
+        g.drawString("M: Merge Sort", 600, 100);
+        g.drawString("N: Merge Sort (in-place)", 600, 120);
+        g.drawString("S: Shellsort", 600, 140);
     }
 
     public void update() {
@@ -230,6 +247,8 @@ public class Sorts {
             mergeSortInPlace.iterate();
         else if (shellSortBol)
             shellSort.iterate();
+        else if (mergeSortBol)
+            mergeSort.iterate();
 
         if (!sorting) {
             if (lowerSize)
